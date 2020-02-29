@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace FolderInfo
 {
@@ -10,6 +7,14 @@ namespace FolderInfo
     {
         static void Main(string[] args)
         {
+            var path = @"D:\AMM\Film";
+            var pattern = "*";
+
+            var files = Directory.GetFiles(path, pattern, SearchOption.AllDirectories);
+            var outputFile = Path.Combine(path, "Files.txt");
+            File.WriteAllLines(outputFile, files);
+            Console.WriteLine($"The End, files : {files.Length}");
+            Console.ReadKey();
         }
     }
 }
