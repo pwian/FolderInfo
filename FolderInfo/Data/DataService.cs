@@ -35,34 +35,50 @@ namespace FolderInfo.Data
 
         public void AddOrUpdateFiles(IEnumerable<string> inFileNames)
         {
-            var files = new List<File>();
-
             using (var db = new FileStoreContext())
             {
-                var filesInDb = db.Files.ToList();
-                Console.WriteLine($"Files in Db = {filesInDb.Count}");
-
-                foreach (var fileName in inFileNames)
-                {
-                    var file = filesInDb.FirstOrDefault(f => f.FileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase));
-                    if (file == null)
-                    {
-                        file = new File
-                        {
-                            FileName = fileName,
-                            DataCreate = DateTime.Now
-                        };
-                    }
-                    file.DataModified = DateTime.Now;
-
-                    files.Add(file);
-                }
-
-                Console.WriteLine($"Files to add or update = {files.Count}");
-                
-                db.Files.AddOrUpdate(files.ToArray());
-                db.SaveChanges();                    
+                var files = GetFileForAddOrUpdate(db, inFileNames);
+                AddOrUpdateInternal(db, files);
             }
          }
+
+        private List<File> GetFileForAddOrUpdate(FileStoreContext inDb, IEnumerable<string> inFileNames)
+        {
+            var files = new List<File>();
+
+            var filesInDb = inDb.Files.ToList();
+            Console.WriteLine($"Files in Db = {filesInDb.Count}");
+            foreach (var fileName in inFileNames)
+            {
+                var file = filesInDb.FirstOrDefault(f => f.FileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase));
+                if (file == null)
+                {
+                    file = new File
+                    {
+                        FileName = fileName,
+                        DataCreate = DateTime.Now
+                    };
+                }
+                file.DataModified = DateTime.Now;
+
+                files.Add(file);
+            }
+
+            return files;
+        }
+
+        private void AddOrUpdateInternal(FileStoreContext inDb, IEnumerable<File> inFiles)
+        {
+            const int CHUNK_SIZE = 10000;
+
+            Console.WriteLine($"Files to add or update = {inFiles.Count()}, size of chunk = {CHUNK_SIZE}");
+            int indexOfChunk = 0;
+            foreach (var fileInChunk in inFiles.Chunk(CHUNK_SIZE))
+            {
+                Console.WriteLine($"Next fileInChunk = {indexOfChunk++}");
+                inDb.Files.AddOrUpdate(inFiles.ToArray());
+                inDb.SaveChanges();
+            }
+        }
     }
 }

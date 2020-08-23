@@ -60,6 +60,7 @@
     <Compile Include="Data\IDataService.cs" />
     <Compile Include="FileService.cs" />
     <Compile Include="IFileService.cs" />
+    <Compile Include="ListExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
