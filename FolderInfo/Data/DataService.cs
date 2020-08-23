@@ -46,9 +46,7 @@ namespace FolderInfo.Data
 
         private List<File> GetFileForAdd(FileStoreContext inDb, IEnumerable<string> inFileNames)
         {
-            var files = new List<File>();
-
-            var filesInDb = inDb.Files.ToList();
+            var filesInDb = inDb.Files.ToHashSet();
             Console.WriteLine($"Files in Db = {filesInDb.Count}");
 
             var maxFileNameLengthAttribute = typeof(File)
@@ -58,33 +56,29 @@ namespace FolderInfo.Data
                 .SingleOrDefault();
             var maxFileNameLength = maxFileNameLengthAttribute != null ? maxFileNameLengthAttribute.MaximumLength : 450;
 
-            foreach (var fileName in inFileNames)
-            {
-                if (fileName.Length > maxFileNameLength)
-                {
-                    Console.WriteLine($"{fileName} is very long, skip this");
-                    continue;
-                }
+            var notExistingFiles = inFileNames.Except(filesInDb.Select(f => f.FileName)).ToList();
 
-                var file = filesInDb.FirstOrDefault(f => f.FileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase));
-                if (file == null)
+            var fileForAdd = notExistingFiles
+                .Where(f => f.Length <= maxFileNameLength)
+                .Select(f => new File
                 {
-                    file = new File
-                    {
-                        FileName = fileName,
-                        DataCreate = DateTime.Now,
-                        DataModified = DateTime.Now
-                    };
-                    files.Add(file);
-                }                
+                    FileName = f,
+                    DataCreate = DateTime.Now,
+                    DataModified = DateTime.Now
+                });
+
+            var fileWithLongName = notExistingFiles.Where(f => f.Length > maxFileNameLength);
+            foreach (var file in fileWithLongName)
+            {
+                Console.WriteLine($"Skip file: {file}");
             }
 
-            return files;
+            return fileForAdd.ToList();
         }
 
         private void AddInternal(FileStoreContext inDb, IEnumerable<File> inFiles)
         {
-            const int CHUNK_SIZE = 10000;
+            const int CHUNK_SIZE = 100000;
 
             var totalChunks = (inFiles.Count() - 1) / CHUNK_SIZE + 1;
             int indexOfChunk = 0;
