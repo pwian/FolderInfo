@@ -1,19 +1,28 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace FolderInfo
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var path = @"D:\AMM\Film";
-            var pattern = "*";
+            IFileService service = new FileService();
+            var drives = DriveInfo.GetDrives().Select(drive => drive.Name);
 
-            var files = Directory.GetFiles(path, pattern, SearchOption.AllDirectories);
-            var outputFile = Path.Combine(path, "Files.txt");
-            File.WriteAllLines(outputFile, files);
-            Console.WriteLine($"The End, files : {files.Length}");
+            var watch = Stopwatch.StartNew();
+            var files = service.GetFiles(drives);
+            watch.Stop();
+            Console.WriteLine($"GetFiles. Execution time: {watch.ElapsedMilliseconds} ms");
+
+            watch = Stopwatch.StartNew();
+            service.AddOrUpdateData(files);
+            watch.Stop();
+            Console.WriteLine($"AddOrUpdateData. Execution time: {watch.ElapsedMilliseconds} ms");
+
+            Console.WriteLine($"The End, files : {files.Count}");
             Console.ReadKey();
         }
     }
