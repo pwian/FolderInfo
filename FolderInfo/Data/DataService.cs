@@ -75,8 +75,8 @@ namespace FolderInfo.Data
             int indexOfChunk = 0;
             foreach (var fileInChunk in inFiles.Chunk(CHUNK_SIZE))
             {
-                Console.WriteLine($"Next fileInChunk = {indexOfChunk++}");
-                inDb.Files.AddOrUpdate(inFiles.ToArray());
+                Console.WriteLine($"Index Chunk = {indexOfChunk++}, count Chunk = {fileInChunk.Count()}");
+                inDb.Files.AddOrUpdate(fileInChunk.ToArray());
                 inDb.SaveChanges();
             }
         }
