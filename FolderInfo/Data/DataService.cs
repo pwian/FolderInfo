@@ -58,7 +58,7 @@ namespace FolderInfo.Data
                 .SingleOrDefault();
             var maxFileNameLength = maxFileNameLengthAttribute != null ? maxFileNameLengthAttribute.MaximumLength : 450;
 
-            foreach (var fileName in inFileNames.Skip(1300000))
+            foreach (var fileName in inFileNames)
             {
                 if (fileName.Length > maxFileNameLength)
                 {
