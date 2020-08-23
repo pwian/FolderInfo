@@ -6,6 +6,6 @@ namespace FolderInfo.Data
     {
         void AddOrUpdateFile(string inFileName);
 
-        void AddOrUpdateFiles(IEnumerable<string> inFileNames);
+        void AddFiles(IEnumerable<string> inFileNames);
     }
 }

@@ -33,16 +33,16 @@ namespace FolderInfo.Data
             { }
         }
 
-        public void AddOrUpdateFiles(IEnumerable<string> inFileNames)
+        public void AddFiles(IEnumerable<string> inFileNames)
         {
             using (var db = new FileStoreContext())
             {
-                var files = GetFileForAddOrUpdate(db, inFileNames);
-                AddOrUpdateInternal(db, files);
+                var files = GetFileForAdd(db, inFileNames);
+                AddInternal(db, files);
             }
          }
 
-        private List<File> GetFileForAddOrUpdate(FileStoreContext inDb, IEnumerable<string> inFileNames)
+        private List<File> GetFileForAdd(FileStoreContext inDb, IEnumerable<string> inFileNames)
         {
             var files = new List<File>();
 
@@ -56,27 +56,26 @@ namespace FolderInfo.Data
                     file = new File
                     {
                         FileName = fileName,
-                        DataCreate = DateTime.Now
+                        DataCreate = DateTime.Now,
+                        DataModified = DateTime.Now
                     };
-                }
-                file.DataModified = DateTime.Now;
-
-                files.Add(file);
+                    files.Add(file);
+                }                
             }
 
             return files;
         }
 
-        private void AddOrUpdateInternal(FileStoreContext inDb, IEnumerable<File> inFiles)
+        private void AddInternal(FileStoreContext inDb, IEnumerable<File> inFiles)
         {
-            const int CHUNK_SIZE = 10000;
+            const int CHUNK_SIZE = 1000;
 
             Console.WriteLine($"Files to add or update = {inFiles.Count()}, size of chunk = {CHUNK_SIZE}");
             int indexOfChunk = 0;
             foreach (var fileInChunk in inFiles.Chunk(CHUNK_SIZE))
             {
                 Console.WriteLine($"Index Chunk = {indexOfChunk++}, count Chunk = {fileInChunk.Count()}");
-                inDb.Files.AddOrUpdate(fileInChunk.ToArray());
+                inDb.Files.AddRange(fileInChunk.ToArray());
                 inDb.SaveChanges();
             }
         }

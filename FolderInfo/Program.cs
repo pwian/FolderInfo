@@ -19,7 +19,7 @@ namespace FolderInfo
             Console.WriteLine($"GetFiles. Execution time: {watch.ElapsedMilliseconds} ms");
 
             watch = Stopwatch.StartNew();
-            service.AddOrUpdateData(files);
+            service.AddData(files);
             watch.Stop();
             Console.WriteLine($"AddOrUpdateData. Execution time: {watch.ElapsedMilliseconds} ms");
 

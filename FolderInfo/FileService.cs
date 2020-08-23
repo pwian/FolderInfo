@@ -44,10 +44,10 @@ namespace FolderInfo
             return files;
         }
 
-        public void AddOrUpdateData(IEnumerable<string> inFiles)
+        public void AddData(IEnumerable<string> inFiles)
         {
             IDataService dataService = new DataService();
-            dataService.AddOrUpdateFiles(inFiles);
+            dataService.AddFiles(inFiles);
         }
     }
 }

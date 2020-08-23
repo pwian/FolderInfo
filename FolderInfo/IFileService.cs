@@ -8,6 +8,6 @@ namespace FolderInfo
 
         HashSet<string> GetFiles(IEnumerable<string> inFolders, string inPattern = "*");
 
-        void AddOrUpdateData(IEnumerable<string> inFiles);
+        void AddData(IEnumerable<string> inFiles);
     }
 }
