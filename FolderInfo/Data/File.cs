@@ -9,7 +9,6 @@ namespace FolderInfo.Data
     {
         [Key]
         [Required]
-        [StringLength(256)]
         public string FileName { get; set; }
 
         [Column(TypeName = "datetime2")]

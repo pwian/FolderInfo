@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.Data.Entity.Validation;
 using System.Linq;
 
 namespace FolderInfo.Data
@@ -68,15 +69,34 @@ namespace FolderInfo.Data
 
         private void AddInternal(FileStoreContext inDb, IEnumerable<File> inFiles)
         {
-            const int CHUNK_SIZE = 1000;
+            const int CHUNK_SIZE = 10000;
 
-            Console.WriteLine($"Files to add or update = {inFiles.Count()}, size of chunk = {CHUNK_SIZE}");
+            var totalChunks = (inFiles.Count() - 1) / CHUNK_SIZE + 1;
             int indexOfChunk = 0;
             foreach (var fileInChunk in inFiles.Chunk(CHUNK_SIZE))
             {
-                Console.WriteLine($"Index Chunk = {indexOfChunk++}, count Chunk = {fileInChunk.Count()}");
+                Console.WriteLine($"Index Chunk = {indexOfChunk++}, size in chunk = {CHUNK_SIZE}, total chunks = {totalChunks}");
                 inDb.Files.AddRange(fileInChunk.ToArray());
-                inDb.SaveChanges();
+
+                try
+                {
+                    inDb.SaveChanges();
+                }
+                catch (DbEntityValidationException ex)
+                {
+                    Console.WriteLine(ex);
+                    foreach (var validationErrors in ex.EntityValidationErrors)
+                    {
+                        foreach (var validationError in validationErrors.ValidationErrors)
+                        {
+                            string message = string.Format("{0}:{1}",
+                                validationErrors.Entry.Entity.ToString(),
+                                validationError.ErrorMessage);
+                            Console.WriteLine(message);
+                        }
+                    }
+                }
+                catch (Exception) { };
             }
         }
     }
