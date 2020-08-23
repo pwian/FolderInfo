@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Migrations;
 using System.Data.Entity.Validation;
 using System.Linq;
@@ -49,8 +50,22 @@ namespace FolderInfo.Data
 
             var filesInDb = inDb.Files.ToList();
             Console.WriteLine($"Files in Db = {filesInDb.Count}");
-            foreach (var fileName in inFileNames)
+
+            var maxFileNameLengthAttribute = typeof(File)
+                .GetProperty(nameof(File.FileName))
+                .GetCustomAttributes(typeof(StringLengthAttribute), false)
+                .Cast<StringLengthAttribute>()
+                .SingleOrDefault();
+            var maxFileNameLength = maxFileNameLengthAttribute != null ? maxFileNameLengthAttribute.MaximumLength : 450;
+
+            foreach (var fileName in inFileNames.Skip(1300000))
             {
+                if (fileName.Length > maxFileNameLength)
+                {
+                    Console.WriteLine($"{fileName} is very long, skip this");
+                    continue;
+                }
+
                 var file = filesInDb.FirstOrDefault(f => f.FileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase));
                 if (file == null)
                 {
