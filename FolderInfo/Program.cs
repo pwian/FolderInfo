@@ -14,6 +14,7 @@ namespace FolderInfo
 
             var watch = Stopwatch.StartNew();
             var files = service.GetFiles(drives);
+            Console.WriteLine($"files founded = {files.Count}");
             watch.Stop();
             Console.WriteLine($"GetFiles. Execution time: {watch.ElapsedMilliseconds} ms");
 

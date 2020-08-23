@@ -7,8 +7,7 @@ namespace FolderInfo.Data
     [Table("File")]
     public partial class File
     {
-        public int Id { get; set; }
-
+        [Key]
         [Required]
         [StringLength(256)]
         public string FileName { get; set; }

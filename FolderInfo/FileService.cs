@@ -47,10 +47,7 @@ namespace FolderInfo
         public void AddOrUpdateData(IEnumerable<string> inFiles)
         {
             IDataService dataService = new DataService();
-            foreach (var file in inFiles)
-            {
-                dataService.AddOrUpdateFile(file);
-            }
+            dataService.AddOrUpdateFiles(inFiles);
         }
     }
 }

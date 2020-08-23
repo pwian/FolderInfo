@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 
@@ -31,5 +32,37 @@ namespace FolderInfo.Data
             catch
             { }
         }
+
+        public void AddOrUpdateFiles(IEnumerable<string> inFileNames)
+        {
+            var files = new List<File>();
+
+            using (var db = new FileStoreContext())
+            {
+                var filesInDb = db.Files.ToList();
+                Console.WriteLine($"Files in Db = {filesInDb.Count}");
+
+                foreach (var fileName in inFileNames)
+                {
+                    var file = filesInDb.FirstOrDefault(f => f.FileName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase));
+                    if (file == null)
+                    {
+                        file = new File
+                        {
+                            FileName = fileName,
+                            DataCreate = DateTime.Now
+                        };
+                    }
+                    file.DataModified = DateTime.Now;
+
+                    files.Add(file);
+                }
+
+                Console.WriteLine($"Files to add or update = {files.Count}");
+                
+                db.Files.AddOrUpdate(files.ToArray());
+                db.SaveChanges();                    
+            }
+         }
     }
 }
