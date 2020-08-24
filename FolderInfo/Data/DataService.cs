@@ -80,6 +80,7 @@ namespace FolderInfo.Data
         {
             const int CHUNK_SIZE = 100000;
 
+            Console.WriteLine($"Total files for add = {inFiles.Count()}");
             var totalChunks = (inFiles.Count() - 1) / CHUNK_SIZE + 1;
             int indexOfChunk = 0;
             foreach (var fileInChunk in inFiles.Chunk(CHUNK_SIZE))
@@ -105,7 +106,10 @@ namespace FolderInfo.Data
                         }
                     }
                 }
-                catch (Exception) { };
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                };
             }
         }
     }

@@ -21,7 +21,7 @@ namespace FolderInfo
             watch = Stopwatch.StartNew();
             service.AddData(files);
             watch.Stop();
-            Console.WriteLine($"AddOrUpdateData. Execution time: {watch.ElapsedMilliseconds} ms");
+            Console.WriteLine($"AddData. Execution time: {watch.ElapsedMilliseconds} ms");
 
             Console.WriteLine($"The End, files : {files.Count}");
             Console.ReadKey();

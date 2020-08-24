@@ -8,8 +8,11 @@ namespace FolderInfo.Data
     public partial class File
     {
         [Key]
+        public int Id { get; set; }
+
         [Required]
-        [StringLength(450)]
+        [StringLength(850)]
+        [Column(TypeName = "nvarchar")]
         public string FileName { get; set; }
 
         [Column(TypeName = "datetime2")]
